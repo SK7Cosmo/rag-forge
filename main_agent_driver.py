@@ -23,9 +23,11 @@ with open("data/sk7_knowledge_base3.json", "r") as file_obj:
 
 
 if __name__ == "__main__":
-	# Used for fallback intimation [filter by category failed]
-	additional_prompt = None
+	# Used for additional instructions to llm
+	# fallback intimation [filter by category failed] ; Summarization instructions
+	additional_prompt = ''
 
+	rag_content = []
 	master_chunks = load_and_chunk_dataset(data=dataset)
 	print("\nLoaded the dataset and created", len(master_chunks), "chunk(s) from dataset.\n")
 
@@ -37,8 +39,13 @@ if __name__ == "__main__":
 			1. Basic Agent
 			2. Custom RAG Agent - Keyword Overlap based [JSON Source]
 			3. Custom RAG Agent - Distance based [ChromaDB Source]
+			4. Custom RAG Agent - Summarization
 			\nChoice: """))
 	query = input("\nEnter the Prompt: ")
+
+	if query == '':
+		print("\nEmpty query not supported")
+		quit()
 
 	if agent_choice == 1:
 		# Sample Queries
@@ -62,7 +69,7 @@ if __name__ == "__main__":
 		if retrieved_doc:
 			rag_content = retrieved_doc["content"]
 		else:
-			rag_content = None
+			rag_content = []
 		print("\nRAG Agent's Response [Keyword Overlap based]:\n\n", generate_rag_response(
 																							query=query,
 																							rag_content=rag_content,
@@ -73,7 +80,6 @@ if __name__ == "__main__":
 		"""
 		What are some recent technological breakthroughs? ; Filter => Education
 		"""
-
 		filter_choice = input("\nDo you want to filter by category (y/n)?: ")
 		if filter_choice.lower() == 'y':
 			category = input("\nEnter the Category filter: ").lower()
@@ -83,9 +89,7 @@ if __name__ == "__main__":
 			print("\nInvalid choice")
 			quit()
 
-		rag_content = []
-
-		# retrieves top 3 chunks tha match the query (and optional category filter0
+		# retrieves top 3 chunks that match the query (and optional category filter)
 		retrieved_chunks, fallback = retrieve_top_results_by_distance(
 																	query=query,
 																	collection=collection,
@@ -98,11 +102,41 @@ if __name__ == "__main__":
 		if fallback:
 			additional_prompt = """Mention that response could not be filtered by provided category
 								Hence, used only query to generate response - in new line\n"""
+		if rag_content[0]:
+			additional_prompt += "List the lines you used as evidence with 'Cited lines:' in new line.\n"
 
 		print("\nRAG Agent's Response [Distance based]:\n\n", generate_rag_response(
 																					query=query,
 																					rag_content=rag_content,
 																					additional_prompt=additional_prompt))
 
+	elif agent_choice == 4:
+		# Sample Queries
+		"""
+		Summarize Company's internal policies
+		"""
+
+		# Prepare summary chunks that match the query
+		# utilizing maximum number of chunks with stricter distance metric
+		retrieved_chunks, fallback = retrieve_top_results_by_distance(
+																	query=query,
+																	collection=collection,
+																	category=[None],
+																	top_k=total_chunk_docs,
+																	distance_threshold=0.7)
+		for chunk in retrieved_chunks:
+			rag_content.append(chunk['content'])
+
+		if rag_content[0]:
+			additional_prompt = f"""You are an expert summarizer. 
+			Please generate a concise summary of the provided context.\n"
+			Do not omit critical details that might answer the user's query.\n"
+			If you cannot produce a summary, only then say 'Summary not possible'.\n
+			Start by saying, Summary: \n"""
+
+		print("\nRAG Agent's Response [Summary]:\n\n", generate_rag_response(
+																			query=query,
+																			rag_content=rag_content,
+																			additional_prompt=additional_prompt))
 	else:
 		print("\nInvalid choice")

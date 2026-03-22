@@ -33,7 +33,7 @@ def retrieve_top_result_by_keyword_overlap(query, documents):
 	return documents.get(best_doc_id)
 
 
-def retrieve_top_results_by_distance(query, collection, category=None, top_k=3, distance_threshold=1.0):
+def retrieve_top_results_by_distance(query, collection, category=None, top_k=3, distance_threshold=0.75):
 	"""
 		Retrieves the top_k chunks from Chroma 'collection' that are most relevant to the given query.
 		Returns a list of retrieved chunks, each containing 'chunk' text, 'doc_id', and 'distance'.

@@ -19,10 +19,10 @@ print("\nChromaDB collection created with", total_chunk_docs, "chunk document(s)
 query_input = "Recent advancements in AI and their impact on teaching"
 filter_category = "Education".lower()
 
-filter_results = retrieve_top_results_by_distance(
+filter_results, fallback = retrieve_top_results_by_distance(
 	query=query_input,
 	collection=collection,
-	categories=[filter_category],
+	category=[filter_category],
 	top_k=3
 )
 

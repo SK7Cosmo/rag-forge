@@ -66,7 +66,7 @@ def generate_rag_response(query, rag_content, additional_prompt=None):
 	If fallback is true, user intimated that response could not be filtered by provided category
 	Hence, used only query to generate response
 	"""
-	if rag_content:
+	if rag_content[0]:
 		prompt = f"Question: {query}\nAnswer using only the following context:\n"
 		for fact in rag_content:
 			prompt += f"- {fact}\n"
@@ -74,7 +74,6 @@ def generate_rag_response(query, rag_content, additional_prompt=None):
 		if additional_prompt:
 			prompt += additional_prompt
 
-		prompt += "List the lines you used as evidence with 'Cited lines:' in new line.\n"
 		prompt += "Specify that you have made use of preconfigured Knowledge Base in new line"
 		prompt += "\nAnswer: "
 

@@ -23,6 +23,7 @@ The repository covers essential components of a RAG pipeline:
 - Modular setup to experiment with different retrieval strategies.
   - Keyword Overlap
   - Cosine Distance
+  - Context Summarizer
 
 ### 4. main_agent_driver.py
 - Serves as the **entry point** to the RAG Playground, handling user queries and coordinating the retrieval and generation workflow.  
