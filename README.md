@@ -17,12 +17,14 @@ The repository covers essential components of a RAG pipeline:
 - Uses **`all-MiniLM-L6-v2`** sentence transformer for efficient embeddings.
 - Supports experimentation with bag-of-words text representation.
 - TSNE visualization of embeddings for exploratory analysis.
+- BM25 - keyword based ranking function is implemented
 
 ### 3. Retrieval & LLM Integration
 - Retrieval-augmented responses using **`gpt-4o-mini`**.
 - Modular setup to experiment with different retrieval strategies.
   - Keyword Overlap
-  - Cosine Distance
+  - Cosine Distance [Semantics]
+  - Hybrid approach [Keyword + Semantics]
   - Context Summarizer
 
 ### 4. main_agent_driver.py
